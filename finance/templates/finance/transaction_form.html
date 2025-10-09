@@ -1,0 +1,120 @@
+ {% extends "finance/base.html" %}
+    {% block title %}Register{% endblock title %}
+    {% block content %}
+    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 bg-white p-6 rounded-xl shadow-lg">
+            <div class="text-center">
+                <h1 class="text-2xl font-bold text-gray-900">Add New Transaction</h1>
+                <p class="mt-2 text-sm text-gray-600">Enter the details of your transaction below</p>
+           </div>
+           <form method="post" class="mt-8 space-y-6">
+            {% csrf_token %}
+            <div class="space-y-5">
+                <!-- Title Field -->
+                <div>
+                    <label for="id_title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input
+                     type="text" 
+                     name="title" 
+                     id="id_title"
+                     maxlength="100"
+                     required
+                     class=" appearance-none  w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter transaction title(e.g., Grocery Shopping)">
+
+                    {% if form.title.errors %}
+                     {%for error in form.title.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+
+            </div>
+
+                <!-- Date Field -->
+                <div>
+                    <label for="id_date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input 
+                    type="date" 
+                    name="date" 
+                    id="id_date"
+                    required
+                    class=" appearance-none  w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+                    {% if form.date.errors %}
+                     {%for error in form.date.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                <!-- Amount Field -->
+                <div>
+                    <label for="id_amount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                    <input 
+                    type="number" 
+                    name="amount" 
+                    id="id_amount"
+                    step="0.01"
+                    min="0"
+                    required
+                    class=" appearance-none  w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter amount (e.g., 50.00)">
+
+                    {% if form.amount.errors %}
+                     {%for error in form.amount.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+
+                <!-- Transaction Type Field -->
+                <div>
+                    <label for="id_transaction_type" class="block text-sm font-medium text-gray-700 mb-1">Transaction Type</label>
+                    <select
+                        name="transaction_type" 
+                        id="id_transaction_type"
+                        required
+                        class=" appearance-none  w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <option value="" disabled selected>Select transaction type</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                    </select>
+                    {% if form.transaction_type.errors %}
+                     {% for error in form.transaction_type.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!--Category Field-->
+                <div>
+                    <label for="id_category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <input 
+                    type="text" 
+                    name="category" 
+                    id="id_category"
+                    maxlength="50"
+                    required
+                    class=" appearance-none  w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Enter category (e.g., Food, Salary)">
+
+                    {% if form.category.errors %}
+                     {%for error in form.category.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+                <!--submit button-->
+                <div>
+                    <button type="submit"
+                            class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Add Transaction
+                    </button>
+           </form>
+
+           <!--Cancel Link-->
+        </div class="text-center ">
+            <a href="{% url 'dashboard' %}" class="text-indigo-600 hover:text-indigo-500 text-sm transition during-150 ease-in-out">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

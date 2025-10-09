@@ -1,0 +1,32 @@
+{% extends "finance/base.html" %}
+{% block title %}Transaction{% endblock title %}
+{% block content %}
+<a href="{% url 'dashboard' %}" class="text-white hover:underline mb-4 inline-block my-4 px-6 py-2 text-sm font-medium bg-indigo-600 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 trasition duration-200">Generate Report</a>
+<h1 class="text-xl font-bold">Transaction list</h1>
+<table class="min-w-full  table-auto border-collapse border border-gray-300">
+    <thead>
+        <tr class="bg-gray-200">
+            <th class="border border-gray-300 px-4 py-2 text-left">Title</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Date</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Amount</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Type</th>
+        </tr>
+    </thead>
+    <tbody>
+
+{% for transaction in transactions %}
+        <tr class="hover:bg-gray-100">
+            <td class="border border-gray-300 px-4 py-2">{{ transaction.title }}</td>
+            <td class="border border-gray-300 px-4 py-2">{{ transaction.date }}</td>
+            <td class="border border-gray-300 px-4 py-2">${{ transaction.amount|floatformat:2 }}</td>
+            <td class="border border-gray-300 px-4 py-2">{% if transaction.transaction_type == 'Income' %}
+                                                            credit
+                                                        {% else %}
+                                                            debit
+                                                        {% endif %}
+            </td>
+        </tr>
+{% endfor %}
+    </tbody>
+</table>
+{% endblock content %}
