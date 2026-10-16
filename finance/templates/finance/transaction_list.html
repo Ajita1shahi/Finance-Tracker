@@ -18,7 +18,7 @@
         <tr class="hover:bg-gray-100">
             <td class="border border-gray-300 px-4 py-2">{{ transaction.title }}</td>
             <td class="border border-gray-300 px-4 py-2">{{ transaction.date }}</td>
-            <td class="border border-gray-300 px-4 py-2">${{ transaction.amount|floatformat:2 }}</td>
+            <td class="border border-gray-300 px-4 py-2">Rs {{ transaction.amount|floatformat:2 }}</td>
             <td class="border border-gray-300 px-4 py-2">{% if transaction.transaction_type == 'Income' %}
                                                             credit
                                                         {% else %}
