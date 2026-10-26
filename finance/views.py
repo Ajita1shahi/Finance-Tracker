@@ -1,3 +1,4 @@
+
 from django.shortcuts import render, HttpResponse, redirect
 from django.views import View
 from finance.forms import RegisterForm, TransactionForm, GoalForm
@@ -5,15 +6,16 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Transaction, Goal
 from django.db.models import Sum
+from django.utils import timezone
 from .admin import TransactionResource
 
 
 class RegisterView(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *_args, **_kwargs):
         form = RegisterForm()
         return render(request, 'finance/register.html', {'form': form})
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *_args, **_kwargs):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
@@ -25,22 +27,20 @@ class RegisterView(View):
 
 
 class DashboardView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *_args, **_kwargs):
         transactions = Transaction.objects.filter(user=request.user)
         goals = Goal.objects.filter(user=request.user)
 
         # Calculate total income
         total_income = (
-            Transaction.objects.filter(
-                user=request.user,
+            transactions.filter(
                 transaction_type='income'
             ).aggregate(Sum('amount'))['amount__sum'] or 0
         )
 
         # Calculate total expenses
         total_expense = (
-            Transaction.objects.filter(
-                user=request.user,
+            transactions.filter(
                 transaction_type='expense'
             ).aggregate(Sum('amount'))['amount__sum'] or 0
         )
@@ -48,6 +48,28 @@ class DashboardView(LoginRequiredMixin, View):
         # Calculate net savings
         net_savings = total_income - total_expense
         remaining_savings = max(net_savings, 0)
+
+        # Calculate this month's income and expenses
+        today = timezone.localdate()
+
+        monthly_transactions = transactions.filter(
+            date__year=today.year,
+            date__month=today.month
+        )
+
+        monthly_income = (
+            monthly_transactions.filter(
+                transaction_type='income'
+            ).aggregate(Sum('amount'))['amount__sum'] or 0
+        )
+
+        monthly_expense = (
+            monthly_transactions.filter(
+                transaction_type='expense'
+            ).aggregate(Sum('amount'))['amount__sum'] or 0
+        )
+
+        monthly_savings = monthly_income - monthly_expense
 
         # Calculate progress for each financial goal
         goal_progress = []
@@ -82,13 +104,19 @@ class DashboardView(LoginRequiredMixin, View):
             'total_expense': total_expense,
             'net_savings': net_savings,
             'goal_progress': goal_progress,
+
+            # Monthly summary
+            'monthly_income': monthly_income,
+            'monthly_expense': monthly_expense,
+            'monthly_savings': monthly_savings,
+            'current_month': today.strftime('%B %Y'),
         }
 
         return render(request, 'finance/dashboard.html', context)
 
 
 class TransactionCreateView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *_args, **_kwargs):
         form = TransactionForm()
         return render(
             request,
@@ -96,7 +124,7 @@ class TransactionCreateView(LoginRequiredMixin, View):
             {'form': form}
         )
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *_args, **_kwargs):
         form = TransactionForm(request.POST)
 
         if form.is_valid():
@@ -113,7 +141,7 @@ class TransactionCreateView(LoginRequiredMixin, View):
 
 
 class TransactionListView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *_args, **_kwargs):
         transactions = Transaction.objects.filter(user=request.user)
 
         return render(
@@ -124,7 +152,7 @@ class TransactionListView(LoginRequiredMixin, View):
 
 
 class GoalCreateView(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *_args, **_kwargs):
         form = GoalForm()
         return render(
             request,
@@ -132,7 +160,7 @@ class GoalCreateView(LoginRequiredMixin, View):
             {'form': form}
         )
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *_args, **_kwargs):
         form = GoalForm(request.POST)
 
         if form.is_valid():
